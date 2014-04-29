@@ -26,7 +26,7 @@ def index():
 def invalidate_data():
     db.drop_all()
     db.create_all()
-    for u, e in [('matt', 'matt@nobien.net'),
-                 ('marc', 'marc@nobien.net')]:
+    for u, e in [('patrick', 'patricklee@u.boisestate.edu'),
+                 ('jeff', 'jeffshelman@u.boisestate.edu')]:
         db.session.add(AppUser(u, e))
     db.session.commit()
