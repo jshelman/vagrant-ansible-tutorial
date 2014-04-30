@@ -1,31 +1,24 @@
-require 'vagrant-ansible'
+# -*- mode: ruby -*-
+# vi: set ft=ruby :
 
-Vagrant::Config.run do |config|
+Vagrant.configure("2") do |config|
+  config.vm.box = "precise32"
+  config.vm.box_url = "http://files.vagrantup.com/precise32.box"
 
-  config.vm.define :web do |web_config|
-    web_config.vm.box = "oneiric32_base"
-    web_config.vm.box_url = "http://files.travis-ci.org/boxes/bases/oneiric32_base.box"
-    web_config.vm.forward_port 80, 8080
-    web_config.vm.network :bridged
-    web_config.vm.network :hostonly, "192.168.100.10"
-
-    web_config.vm.provision :ansible do |ansible|
-      ansible.playbook = "devops/webserver.yml"
-      ansible.hosts = "webservers"
+  config.vm.define :db do |db|
+    db.vm.network :private_network, ip: "192.168.100.20"
+    db.vm.provider :virtualbox do |vb|
+      vb.name = "db"
+      vb.customize ["modifyvm", :id, "--memory", "512"]
     end
   end
-
-  config.vm.define :db do |db_config|
-    db_config.vm.box = "oneiric32_base"
-    db_config.vm.box_url = "http://files.travis-ci.org/boxes/bases/oneiric32_base.box"
-    db_config.vm.forward_port 5432, 54322
-    db_config.vm.network :bridged
-    db_config.vm.network :hostonly, "192.168.100.20"
-
-    db_config.vm.provision :ansible do |ansible|
-      ansible.playbook = "devops/dbserver.yml"
-      ansible.hosts = "dbservers"
+  
+  config.vm.define :web do |web|
+    web.vm.network :private_network, ip: "192.168.100.10"
+	web.vm.forward_port 80, 8080
+    web.vm.provider :virtualbox do |vb|
+      vb.name = "web"
+      vb.customize ["modifyvm", :id, "--memory", "512"]
     end
   end
-
 end
